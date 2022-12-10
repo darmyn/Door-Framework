@@ -17,7 +17,7 @@ door.metatable = {__index = door.schema}
 
 --[[   If the `instance` contains an attribute listed under the provided `attributeName`, and the attributes value's type is the same as `expectedType`,
          the attribute will be assigned as a property of the given `object`.   ]]
-local function assignAttributeToProperty(object, instance: Instance, attributeName: string, expectedType: string)
+local function assignAttributeToObject(object, instance: Instance, attributeName: string, expectedType: string)
     local attributeValue = instance:GetAttribute(attributeName)
     if attributeValue then
         local attributeValueType = typeof(attributeValue)
@@ -58,10 +58,10 @@ end
 function door.interface.new(model: doorModel)
     local hinge, hitbox, handle, lock = assertDoorModel(model)
     local self = setmetatable(publicConfig.defaultProperties(), door.metatable)
-    assignAttributeToProperty(self, model, "activationRange", "number")
-    assignAttributeToProperty(self, model, "activationCooldown", "number")
-    assignAttributeToProperty(self, model, "locked", "boolean")
-    assignAttributeToProperty(self, model, "mode", "string")
+    assignAttributeToObject(self, model, "activationRange", "number")
+    assignAttributeToObject(self, model, "activationCooldown", "number")
+    assignAttributeToObject(self, model, "locked", "boolean")
+    assignAttributeToObject(self, model, "mode", "string")
     self.model = model
     self.hinge = hinge
     self.hitbox = hitbox
