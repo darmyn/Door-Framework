@@ -1,8 +1,11 @@
 export type doorModel = Instance | {
     Hinge: BasePart,
     Hitbox: BasePart,
-    Handle: BasePart?,
-    Lock: BasePart?
+}
+
+export type extension = {
+    [string]: any,
+    init: (door: any) -> nil
 }
 
 return false
