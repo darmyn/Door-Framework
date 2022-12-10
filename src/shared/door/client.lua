@@ -4,19 +4,30 @@ local door = require(script.Parent)
 local config = require(script.Parent.config)
 
 local privateConfig = config.private
+local publicConfig = config.public
+local moduleSettings = publicConfig.moduleSettings
 local outputMessages = privateConfig.outputMessages
 local types = privateConfig.types
-local doorActivated: RemoteEvent
+local doorActivationReplicated: RemoteEvent
 local activeDoorObjects = {} :: {[Model]: doorServer}
 
+local function dispatchDoorActivationReplicated(doorModel: doorModel, ...)
+    local activeDoorObject = activeDoorObjects[doorModel]
+    if activeDoorObject then
+        print("xyz")
+    elseif moduleSettings.showWarnings then
+        warn(outputMessages.doorObjectDoesNotExistInEnvironment:format("server"), "Model: ", doorModel)
+    end
+end
+
 local function connectDoorNetwork()
-    doorActivated.OnClientEvent:Connect(dispatchDoorActivated)
+    doorActivationReplicated.OnClientEvent:Connect(dispatchDoorActivationReplicated)
 end
 
 local function initializeDoorNetwork()
-    doorActivated = Instance.new("RemoteEvent")
-    doorActivated.Name = "activated"
-    doorActivated.Parent = script.Parent
+    doorActivationReplicated = Instance.new("RemoteEvent")
+    doorActivationReplicated.Name = "activated"
+    doorActivationReplicated.Parent = script.Parent
     connectDoorNetwork()
 end
 

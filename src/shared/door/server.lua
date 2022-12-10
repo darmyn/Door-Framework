@@ -4,6 +4,8 @@ local door = require(script.Parent)
 local config = require(script.Parent.config)
 
 local privateConfig = config.private
+local publicConfig = config.public
+local moduleSettings = publicConfig.moduleSettings
 local outputMessages = privateConfig.outputMessages
 local types = privateConfig.types
 local doorActivated: RemoteEvent
@@ -26,6 +28,8 @@ local function dispatchDoorActivated(player: Player, doorModel: Model)
         local activeDoorObject = activeDoorObjects[doorModel]
         if activeDoorObject then
             activeDoorObject:activated(player)
+        elseif moduleSettings.showWarnings then
+            warn(outputMessages.doorObjectDoesNotExistInEnvironment:format("server"), "Model: ", doorModel)
         end
     end
 end
@@ -47,11 +51,9 @@ end
 
 local function initializeServerExtensions() : {extension}
     local output = {}
-    for _, extension in pairs(script.Parent.extensions:GetChildren()) do
+    for _, extension in pairs(script.Parent.extensions:GetDescendants()) do
         extension = (extension:IsA("ModuleScript")) and extension or extension:FindFirstChild("server")
-        if extension:IsA("ModuleScript") then
-            table.insert(output, door.util.loadExtension(extension))
-        end
+        table.insert(output, door.util.loadExtension(extension))
     end
     return output
 end

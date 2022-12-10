@@ -61,6 +61,7 @@ function door.interface.new(model: doorModel)
     self.model = model
     self.hinge = hinge
     self.hitbox = hitbox
+    self._extensionsIntialized = {}
     self.signals = {
         activated = signal.new(),
         activationConfirmed = signal.new(),
@@ -71,11 +72,28 @@ function door.interface.new(model: doorModel)
     return self
 end
 
-function door.util.loadExtension(extension: ModuleScript)
-    local loadedExtension: extension = require(extension)
-    local init = loadedExtension.init
-    assert(init and typeof(init) == "function", outputMessages.missingExtensionInitializer:format(extension.Name))
-    return loadedExtension
+function door.util.loadExtension(self: door, extension: ModuleScript)
+    if extension:IsA("ModuleScript") then
+        local loadedExtension: extension = require(extension)
+        local init = loadedExtension.init
+        assert(init and typeof(init) == "function", outputMessages.missingExtensionInitializer:format(extension.Name))
+        self._extensionsIntialized[extension] = true
+        return loadedExtension
+    end
+end
+
+function door.util.waitForExtension(self: door, extensionName: string, timeout: number?)
+    timeout = timeout or 10
+    local waitBeganTimestamp = time()
+    while not self._extensionsIntialized[extensionName] do
+        local timeElapsed = time() - waitBeganTimestamp
+        if timeElapsed > timeout then
+            if publicConfig.moduleSettings.showWarnings then
+                warn(outputMessages.waitTimeExceededExpectation:format(timeElapsed, timeout, "`"..extensionName.."` extension to load."))
+            end
+        end
+        task.wait()
+    end
 end
 
 function door.schema.destroy(self: door)
