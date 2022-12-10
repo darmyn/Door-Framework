@@ -1,0 +1,10 @@
+{
+  "name": "Door",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "$path": "src/shared"
+    }
+  }
+}
